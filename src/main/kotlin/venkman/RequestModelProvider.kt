@@ -1,5 +1,0 @@
-package venkman
-
-class RequestModelProvider {
-
-}

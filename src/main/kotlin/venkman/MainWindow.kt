@@ -1,30 +1,39 @@
 package venkman
 
-import org.apache.http.client.methods.*
-import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.util.EntityUtils
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
-import java.io.IOException
-import java.io.UncheckedIOException
 import javax.swing.*
 import javax.swing.JFrame.EXIT_ON_CLOSE
 
-class MainWindow() {
-    private val frame: JFrame
-    private var responseView: JTextArea? = null
+class MainWindow(val app: VenkmanApp) {
+    internal val frame: JFrame
+    private val urlInput = JTextField()
+    private val methodSelector = JComboBox(arrayOf<Any>("GET", "POST", "PUT", "HEAD", "DELETE"))
+    private val sendButton = JButton(object : AbstractAction("Send") {
+        override fun actionPerformed(e: ActionEvent) {
+            val requestModel = RequestModel(urlInput.text, listOf(), methodSelector.selectedItem as String)
+            app.send(requestModel)
+        }
+    })
+    private val responseView: ResponseView = ResponseView(app)
+    internal var loading: Boolean = false
+        set(value) {
+            urlInput.isEnabled = !value
+            sendButton.isEnabled = !value
+        }
+
 
     init {
         this.frame = JFrame("Venkman")
         frame.defaultCloseOperation = EXIT_ON_CLOSE
         val contentPane = frame.contentPane
         contentPane.add(createNavBar(), BorderLayout.NORTH)
-        contentPane.add(createResponseView(), BorderLayout.CENTER)
+        contentPane.add(responseView, BorderLayout.CENTER)
         val rootPane = frame.rootPane
-        registerKeyBinding(rootPane, KeyEvent.VK_PLUS, InputEvent.CTRL_MASK, "Increase Font Size", {e -> changeFontSize(1.2)})
-        registerKeyBinding(rootPane, KeyEvent.VK_MINUS, InputEvent.CTRL_MASK, "Decrease Font Size", {e -> changeFontSize(1.0 / 1.2)})
+        registerKeyBinding(rootPane, KeyEvent.VK_PLUS, InputEvent.CTRL_MASK, "Increase Font Size", { e -> changeFontSize(1.2) })
+        registerKeyBinding(rootPane, KeyEvent.VK_MINUS, InputEvent.CTRL_MASK, "Decrease Font Size", { e -> changeFontSize(1.0 / 1.2) })
         frame.pack()
         frame.isVisible = true
     }
@@ -63,10 +72,7 @@ class MainWindow() {
     }
 
     private fun createNavBar(): JPanel {
-        val methodSelector = JComboBox(arrayOf<Any>("GET", "POST", "PUT", "HEAD", "DELETE"))
-        val urlInput = JTextField()
         urlInput.text = "http://blablabla.de:8080/main/entpunkt"
-        val sendButton = JButton(SendAction(methodSelector, urlInput))
         val layout = GridBagLayout()
         val navBar = JPanel(layout)
         val constraints = GridBagConstraints()
@@ -87,41 +93,5 @@ class MainWindow() {
         return navBar
     }
 
-    private fun createRequest(method: String, url: String): HttpUriRequest {
-        when (method) {
-            "GET" -> return HttpGet(url)
-            "POST" -> return HttpPost(url)
-            "PUT" -> return HttpPut(url)
-            "HEAD" -> return HttpHead(url)
-            "DELETE" -> return HttpDelete(url)
-            else -> throw IllegalArgumentException("Invalid method " + method)
-        }
-    }
 
-    private fun createResponseView(): JComponent {
-        responseView = JTextArea()
-        responseView!!.rows = 20
-        responseView!!.text = "Hier steht dann die Response"
-        return JScrollPane(responseView)
-    }
-
-    private inner class SendAction(private val methodSelector: JComboBox<*>, private val urlInput: JTextField) : AbstractAction("Send") {
-        override fun actionPerformed(e: ActionEvent) {
-            responseView!!.text = ""
-            try {
-                HttpClientBuilder.create()
-                        .disableRedirectHandling()
-                        .build().use { httpClient ->
-                    val request = createRequest(methodSelector.selectedItem as String, urlInput.text)
-                    httpClient.execute(request).use { response ->
-                        val responseString = EntityUtils.toString(response.entity)
-                        responseView!!.text = responseString
-                    }
-                }
-            } catch (e1: IOException) {
-                throw UncheckedIOException(e1)
-            }
-
-        }
-    }
 }

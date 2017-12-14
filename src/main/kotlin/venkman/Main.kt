@@ -10,6 +10,6 @@ object Main {
         System.setProperty("awt.useSystemAAFontSettings", "on")
         System.setProperty("swing.aatext", "true")
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-        MainWindow()
+        VenkmanApp()
     }
 }
