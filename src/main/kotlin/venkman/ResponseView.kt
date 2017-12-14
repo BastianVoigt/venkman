@@ -7,7 +7,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextArea
 
-class ResponseView(val app: VenkmanApp) : JPanel(BorderLayout(), false) {
+class ResponseView(app: VenkmanApp) : JPanel(BorderLayout(), false) {
 
     val statusCodeView: JLabel = JLabel()
     val bodyView: JTextArea = JTextArea(20, 20)

@@ -34,7 +34,7 @@ class VenkmanApp {
                 }
             }
         } catch (e1: IOException) {
-            JOptionPane.showConfirmDialog(mainWindow.frame, "An error occured: " + e1.message, "An error occured", JOptionPane.ERROR_MESSAGE or JOptionPane.CLOSED_OPTION)
+            JOptionPane.showConfirmDialog(mainWindow, "An error occured: " + e1.message, "An error occured", JOptionPane.ERROR_MESSAGE or JOptionPane.CLOSED_OPTION)
             e1.printStackTrace(System.err)
         } finally {
             mainWindow.loading = false;

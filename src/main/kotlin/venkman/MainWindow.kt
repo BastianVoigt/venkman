@@ -5,10 +5,8 @@ import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
-import javax.swing.JFrame.EXIT_ON_CLOSE
 
-class MainWindow(val app: VenkmanApp) {
-    internal val frame: JFrame
+class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
     private val urlInput = JTextField()
     private val methodSelector = JComboBox(arrayOf<Any>("GET", "POST", "PUT", "HEAD", "DELETE"))
     private val sendButton = JButton(object : AbstractAction("Send") {
@@ -24,22 +22,17 @@ class MainWindow(val app: VenkmanApp) {
             sendButton.isEnabled = !value
         }
 
-
     init {
-        this.frame = JFrame("Venkman")
-        frame.defaultCloseOperation = EXIT_ON_CLOSE
-        val contentPane = frame.contentPane
+        defaultCloseOperation = EXIT_ON_CLOSE
         contentPane.add(createNavBar(), BorderLayout.NORTH)
         contentPane.add(responseView, BorderLayout.CENTER)
-        val rootPane = frame.rootPane
         registerKeyBinding(rootPane, KeyEvent.VK_PLUS, InputEvent.CTRL_MASK, "Increase Font Size", { e -> changeFontSize(1.2) })
         registerKeyBinding(rootPane, KeyEvent.VK_MINUS, InputEvent.CTRL_MASK, "Decrease Font Size", { e -> changeFontSize(1.0 / 1.2) })
-        frame.pack()
-        frame.isVisible = true
+        pack()
+        isVisible = true
     }
 
     private fun changeFontSize(factor: Double) {
-        val contentPane = frame.contentPane
         val font = contentPane.font
         val fontSizePt = font.size.toFloat()
         var increasedFontSizePt = (fontSizePt * factor).toInt().toFloat()
@@ -48,7 +41,7 @@ class MainWindow(val app: VenkmanApp) {
         }
         val increasedFont = font.deriveFont(increasedFontSizePt)
         setFontRecursive(contentPane, increasedFont)
-        frame.pack()
+        pack()
     }
 
     private fun setFontRecursive(c: Component, font: Font) {
