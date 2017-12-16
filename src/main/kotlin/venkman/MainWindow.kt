@@ -9,22 +9,30 @@ import javax.swing.*
 class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
     private val urlInput = JTextField()
     private val methodSelector = JComboBox(arrayOf<Any>("GET", "POST", "PUT", "HEAD", "DELETE"))
+
     private val sendButton = JButton(object : AbstractAction("Send") {
         override fun actionPerformed(e: ActionEvent) {
             val requestModel = RequestModel(urlInput.text, listOf(), methodSelector.selectedItem as String)
             app.send(requestModel)
         }
     })
+
     private val responseView: ResponseView = ResponseView(app)
+
+    private val headersTable = HeadersTable()
     internal var loading: Boolean = false
         set(value) {
             urlInput.isEnabled = !value
             sendButton.isEnabled = !value
         }
 
+
     init {
         defaultCloseOperation = EXIT_ON_CLOSE
-        contentPane.add(createNavBar(), BorderLayout.NORTH)
+        val northPanel = JPanel(BorderLayout())
+        northPanel.add(createNavBar(), BorderLayout.NORTH)
+        northPanel.add(headersTable, BorderLayout.CENTER)
+        contentPane.add(northPanel, BorderLayout.NORTH)
         contentPane.add(responseView, BorderLayout.CENTER)
         registerKeyBinding(rootPane, KeyEvent.VK_PLUS, InputEvent.CTRL_MASK, "Increase Font Size", { e -> changeFontSize(1.2) })
         registerKeyBinding(rootPane, KeyEvent.VK_MINUS, InputEvent.CTRL_MASK, "Decrease Font Size", { e -> changeFontSize(1.0 / 1.2) })
@@ -40,16 +48,20 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
             ++increasedFontSizePt
         }
         val increasedFont = font.deriveFont(increasedFontSizePt)
-        setFontRecursive(contentPane, increasedFont)
+        setFontRecursive(contentPane, increasedFont, factor)
         pack()
     }
 
-    private fun setFontRecursive(c: Component, font: Font) {
+    private fun setFontRecursive(c: Component, font: Font, factor: Double) {
         if (Container::class.java.isAssignableFrom(c.javaClass)) {
             val children = (c as Container).components
             for (child in children) {
-                setFontRecursive(child, font)
+                setFontRecursive(child, font, factor)
             }
+        }
+        if (JTable::class.java.isAssignableFrom(c.javaClass)) {
+            val table = c as JTable
+            table.rowHeight = (table.rowHeight.toFloat() * factor).toInt()
         }
         c.font = font
     }
