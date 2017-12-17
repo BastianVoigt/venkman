@@ -67,7 +67,7 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
 
     private fun registerKeyBinding(rootPane: JRootPane, keyEvent: Int, modifier: Int, actionName: String, action: (ActionEvent) -> Unit) {
         val keyStroke = KeyStroke.getKeyStroke(keyEvent, modifier)
-        rootPane.inputMap.put(keyStroke, actionName)
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, actionName)
         rootPane.actionMap.put(actionName, object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent) {
                 action(e)

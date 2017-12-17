@@ -1,13 +1,43 @@
 package venkman
 
+import java.awt.Font
 import javax.swing.JTable
+import javax.swing.JTextField
+import javax.swing.SwingUtilities
 import javax.swing.table.AbstractTableModel
+import javax.swing.table.TableCellEditor
+import javax.swing.DefaultCellEditor
+
 
 class ResponseHeadersView : JTable() {
     val model = HeadersModel()
+    private var myCellEditor: DefaultCellEditor? = null
 
     init {
         setModel(model)
+        val textfield = JTextField()
+        textfield.isEditable = false
+        textfield.border = null
+        myCellEditor = DefaultCellEditor(textfield)
+    }
+
+    override fun getCellEditor(row: Int, column: Int): TableCellEditor {
+        return myCellEditor!!;
+    }
+
+    override fun changeSelection(row: Int, column: Int, toggle: Boolean, extend: Boolean) {
+        super.changeSelection(row, column, toggle, extend);
+        SwingUtilities.invokeLater {
+            if ((getCellEditor(row, column) != null && !editCellAt(row, column))) {
+                val textfield : JTextField = myCellEditor!!.component as JTextField;
+                textfield.selectAll();
+            }
+        }
+    }
+
+    override fun setFont(font: Font?) {
+        super.setFont(font)
+        myCellEditor?.component?.setFont(font)
     }
 
     class HeadersModel : AbstractTableModel() {
@@ -32,7 +62,7 @@ class ResponseHeadersView : JTable() {
         }
 
         override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
-            return false
+            return true
         }
     }
 
