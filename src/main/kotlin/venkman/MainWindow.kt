@@ -26,7 +26,6 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
             sendButton.isEnabled = !value
         }
 
-
     init {
         defaultCloseOperation = EXIT_ON_CLOSE
         val northPanel = JPanel(BorderLayout())
@@ -97,6 +96,4 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
         navBar.add(sendButton, constraints)
         return navBar
     }
-
-
 }

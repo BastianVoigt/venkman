@@ -4,7 +4,6 @@ import org.apache.http.client.methods.*
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
-import java.io.IOException
 import javax.swing.JOptionPane
 
 class VenkmanApp {
@@ -27,14 +26,18 @@ class VenkmanApp {
                         response.statusLine.reasonPhrase,
                         response.statusLine.protocolVersion.toString(),
                         headers,
-                        EntityUtils.toString(response.entity)
+                        when(response.entity) {
+                            null -> ""
+                            else -> EntityUtils.toString(response.entity)
+                        }
                 )
                 for (listener in listeners) {
                     listener(responseModel!!)
                 }
             }
         } catch (e1: Exception) {
-            JOptionPane.showConfirmDialog(mainWindow, "An error occured: " + e1.message, "An error occured", JOptionPane.ERROR_MESSAGE or JOptionPane.CLOSED_OPTION)
+            JOptionPane.showConfirmDialog(mainWindow, "An error occured: " + e1.message, "An error occured",
+                    JOptionPane.ERROR_MESSAGE or JOptionPane.CLOSED_OPTION)
             e1.printStackTrace(System.err)
         } finally {
             mainWindow.loading = false;

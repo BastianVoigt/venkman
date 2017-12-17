@@ -29,7 +29,9 @@ class HeadersTable : JPanel(BorderLayout()) {
     }
 
     fun getHeaders(): List<Pair<String, String>> {
-        return headers.toList()
+        return headers
+                .filter({ h -> !(h.first.isEmpty() || h.second.isEmpty()) })
+                .toList()
     }
 
     class MyTableModel(val data: MutableList<Pair<String, String>>) : AbstractTableModel() {
