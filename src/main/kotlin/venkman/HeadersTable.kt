@@ -2,10 +2,11 @@ package venkman
 
 import java.awt.BorderLayout
 import java.util.*
+import javax.swing.DefaultCellEditor
 import javax.swing.JPanel
 import javax.swing.JTable
-import javax.swing.event.ChangeEvent
 import javax.swing.table.AbstractTableModel
+
 
 class HeadersTable : JPanel(BorderLayout()) {
     private val headers: MutableList<Pair<String, String>> = mutableListOf(Pair("Accept", "application/json"))
@@ -20,8 +21,15 @@ class HeadersTable : JPanel(BorderLayout()) {
                 return super.editCellAt(row, column, eventObject)
             }
         }
+        for (i in 0 until table.columnCount) {
+            (table.getDefaultEditor(table.getColumnClass(i)) as DefaultCellEditor).clickCountToStart = 1
+        }
         add(table.tableHeader, BorderLayout.NORTH)
         add(table, BorderLayout.CENTER)
+    }
+
+    fun getHeaders(): List<Pair<String, String>> {
+        return headers.toList()
     }
 
     class MyTableModel(val data: MutableList<Pair<String, String>>) : AbstractTableModel() {
@@ -57,6 +65,13 @@ class HeadersTable : JPanel(BorderLayout()) {
 
         override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
             return true
+        }
+
+        override fun getColumnName(column: Int): String {
+            if (column == 0) {
+                return "Key"
+            }
+            return "Value"
         }
     }
 }

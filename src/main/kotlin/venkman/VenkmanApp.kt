@@ -33,7 +33,7 @@ class VenkmanApp {
                     listener(responseModel!!)
                 }
             }
-        } catch (e1: IOException) {
+        } catch (e1: Exception) {
             JOptionPane.showConfirmDialog(mainWindow, "An error occured: " + e1.message, "An error occured", JOptionPane.ERROR_MESSAGE or JOptionPane.CLOSED_OPTION)
             e1.printStackTrace(System.err)
         } finally {

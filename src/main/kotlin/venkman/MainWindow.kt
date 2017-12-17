@@ -9,17 +9,17 @@ import javax.swing.*
 class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
     private val urlInput = JTextField()
     private val methodSelector = JComboBox(arrayOf<Any>("GET", "POST", "PUT", "HEAD", "DELETE"))
+    private val headersTable = HeadersTable()
 
     private val sendButton = JButton(object : AbstractAction("Send") {
         override fun actionPerformed(e: ActionEvent) {
-            val requestModel = RequestModel(urlInput.text, listOf(), methodSelector.selectedItem as String)
+            val requestModel = RequestModel(urlInput.text, headersTable.getHeaders(), methodSelector.selectedItem as String)
             app.send(requestModel)
         }
     })
 
     private val responseView: ResponseView = ResponseView(app)
 
-    private val headersTable = HeadersTable()
     internal var loading: Boolean = false
         set(value) {
             urlInput.isEnabled = !value
