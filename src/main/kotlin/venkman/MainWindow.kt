@@ -20,13 +20,8 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
 
     private val responseView: ResponseView = ResponseView(app)
 
-    internal var loading: Boolean = false
-        set(value) {
-            urlInput.isEnabled = !value
-            sendButton.isEnabled = !value
-        }
-
     init {
+        app.addListener(this::modelChanged)
         defaultCloseOperation = EXIT_ON_CLOSE
         val northPanel = JPanel(BorderLayout())
         northPanel.add(createNavBar(), BorderLayout.NORTH)
@@ -37,6 +32,11 @@ class MainWindow(val app: VenkmanApp) : JFrame("Venkman") {
         registerKeyBinding(rootPane, KeyEvent.VK_MINUS, InputEvent.CTRL_MASK, "Decrease Font Size", { e -> changeFontSize(1.0 / 1.2) })
         pack()
         isVisible = true
+    }
+
+    fun modelChanged(model: ResponseModel) {
+        urlInput.isEnabled = !model.loading
+        sendButton.isEnabled = !model.loading
     }
 
     private fun changeFontSize(factor: Double) {
